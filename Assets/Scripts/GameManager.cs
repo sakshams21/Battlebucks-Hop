@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
 
     private int _highScore;
     private int _currentScore;
+    private Vector3 _defaultGravity=new Vector3(0, -9.81f, 0);
     
     private void Start()
     {
@@ -44,7 +45,7 @@ public class GameManager : MonoBehaviour
         StartGame_Canvas.enabled = true;
         
         //To make the ball drop faster
-        Physics.gravity *= 2;
+        Physics.gravity =_defaultGravity* 2;
         
         PlayerController.OnPlayerJump += ScoreUpdate;
         PlayerController.OnGameOver += ResetGame;
