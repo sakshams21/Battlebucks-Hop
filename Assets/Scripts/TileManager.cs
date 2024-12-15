@@ -1,21 +1,37 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class TileManager : MonoBehaviour
 {
-    [SerializeReference]private Rigidbody[] Tiles;
-    [SerializeReference]private GameObject[] Bonus;
+    [SerializeField]private Tile[] Tiles;
     
     [SerializeReference]private Transform[] StartPoints;
     [SerializeReference] private float TileMoveSpeed;
     [SerializeReference]private Transform StartPoint;
 
+    private void Start()
+    {
+        PlayerController.OnGameOver += StopSpawningTile;
+    }
+
+    private void OnDestroy()
+    {
+        PlayerController.OnGameOver -= StopSpawningTile;
+    }
+
+    private void StopSpawningTile()
+    {
+       CancelInvoke(nameof(SpawnTiles));
+    }
+
     public void StartGame()
     {
         for (int i = 0; i < 2; i++)
         {
-            Tiles[i].linearVelocity = Vector3.back * TileMoveSpeed;
+            Tiles[i].Activate();
+            Tiles[i].Rb.linearVelocity = Vector3.back * TileMoveSpeed;
         }
         InvokeRepeating(nameof(SpawnTiles), 0, 1);
     }
@@ -23,30 +39,26 @@ public class TileManager : MonoBehaviour
     public void SpawnTiles()
     {
         int posX = Random.Range(0, 3);
-        (Rigidbody,int) tile = GetFreeTile();
-        
-        if (tile.Item1 == null) return;
-        tile.Item1.gameObject.SetActive(true);
-        
-        //20% chance for bonus
-        Bonus[tile.Item2].SetActive(Random.Range(0, 100) < 20);
-        
-        tile.Item1.transform.position = StartPoint.position;
-        tile.Item1.transform.DOMove(StartPoints[posX].position, 0.5f).OnComplete(() =>
-        {
-            tile.Item1.transform.position = StartPoints[posX].position;
-            tile.Item1.linearVelocity = Vector3.back * TileMoveSpeed;
-        });
-    }
-
-    private (Rigidbody,int) GetFreeTile()
-    {
+        int tileIndex = -1;
         for (int index = 0; index < Tiles.Length; index++)
         {
-            if (!Tiles[index].gameObject.activeSelf)
-                return (Tiles[index],index);
+            if (Tiles[index].IsAvailable)
+            {
+                tileIndex = index;
+                break;
+            }
         }
 
-        return (null,0);
+        Tiles[tileIndex].Activate();
+        
+        //20% chance for bonus
+        Tiles[tileIndex].Bonus_Go.SetActive(Random.Range(0, 100) < 20);
+        
+        Tiles[tileIndex].transform.position = StartPoint.position;
+        Tiles[tileIndex].transform.DOMove(StartPoints[posX].position, 0.5f).OnComplete(() =>
+        {
+            Tiles[tileIndex].transform.position = StartPoints[posX].position;
+            Tiles[tileIndex].Rb.linearVelocity = Vector3.back * TileMoveSpeed;
+        });
     }
 }

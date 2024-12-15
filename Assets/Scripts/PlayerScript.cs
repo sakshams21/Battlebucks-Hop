@@ -15,29 +15,33 @@ public class PlayerController : MonoBehaviour
     [SerializeReference] private float maxRight;
     
     public static event Action<bool> OnPlayerJump;
+   
     public static event Action OnGameOver;
 
+    private bool _isBonusTouched = false;
+    
     private void Update()
     {
         GetMousePosition(Mouse.current.position.ReadValue());
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        { 
-            Player_Rb.useGravity = !Player_Rb.useGravity;
-        }
     }
+    
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Tile"))
         {
             PlayerBounce(1);
-            OnPlayerJump?.Invoke(false);
+            Tile tile = other.gameObject.GetComponent<Tile>();
+            if (tile != null)
+            {
+                tile.Effector(_isBonusTouched);
+                OnPlayerJump?.Invoke(_isBonusTouched);
+                _isBonusTouched = false;
+            }
         }
-
         if (other.gameObject.CompareTag("Bonus"))
         {
-            PlayerBounce(1);
-            OnPlayerJump?.Invoke(true);
+            _isBonusTouched = true;
         }
 
         if (other.gameObject.CompareTag("GameReset"))

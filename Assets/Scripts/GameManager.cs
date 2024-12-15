@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
+        BonusParticle_Go.SetActive(false);
         GameOver_Canvas.enabled = false;
         Overlay_Canvas.enabled = false;
         StartGame_Canvas.enabled = true;
@@ -51,7 +52,7 @@ public class GameManager : MonoBehaviour
         if (isBonus)
         {
             _currentScore+=5;
-            BonusParticle_Go.SetActive(true);
+            // BonusParticle_Go.SetActive(true);
         }
         else
         {
@@ -62,6 +63,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetGame()
     {
+        BonusParticle_Go.SetActive(true);
         //reset score
         if (_currentScore > _highScore)
         {
@@ -70,7 +72,7 @@ public class GameManager : MonoBehaviour
 
         CurrentScore_Text.text = $"Current: {_currentScore}";
         PlayerPrefs.SetInt("HighScore", _highScore);
-        HighScore_Text.text = $"Best:{_highScore}";
+        HighScore_Text.text = $"Best: {_highScore}";
         _currentScore = 0;
         Score_Text.text = "0";
         

@@ -6,6 +6,7 @@ public class AudioManager : MonoBehaviour
     [SerializeReference]private AudioSource Sound_AudioSource;
 
     [SerializeReference]private AudioClip JumpSound_Clip;
+    [SerializeReference]private AudioClip JumpSoundBonus_Clip;
     [SerializeReference]private AudioClip GameOverSound_Clip;
     private void Start()
     {
@@ -20,6 +21,6 @@ public class AudioManager : MonoBehaviour
 
     private void JumpSound(bool isBonus)
     {
-        Sound_AudioSource.PlayOneShot(JumpSound_Clip);
+        Sound_AudioSource.PlayOneShot(isBonus?JumpSoundBonus_Clip:JumpSound_Clip);
     }
 }
