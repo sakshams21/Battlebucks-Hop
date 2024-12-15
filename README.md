@@ -13,7 +13,7 @@ A attempt at creating clone of the game HOP from Ketchapp [Play Store Link](http
 
 ---
 ## Gameplay
-![GiF](Demo/Hop Gameplay.gif)
+![GiF](Preview/Hop_Gameplay.gif)
 
 ---
 
