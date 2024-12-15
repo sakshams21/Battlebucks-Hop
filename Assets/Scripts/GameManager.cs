@@ -1,8 +1,11 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
+
+/// <summary>
+/// Handles starting of game, score and gameover conditions and manages and trigger methods for other scripts
+/// </summary>
 public class GameManager : MonoBehaviour
 { 
     [SerializeReference] private PlayerController Ref_PlayerController;
@@ -10,18 +13,24 @@ public class GameManager : MonoBehaviour
     
     [Header("UI Elements")] [Space(10f)]
     
+    //Ingame
+    [Tooltip("The UI elements that will be displayed on the scene.")]
     [SerializeReference] private TextMeshProUGUI Score_Text;
+    
     //in Restart Canvas
+    [Tooltip("The UI elements that will be displayed on the Game over Canvas.")]
     [SerializeReference] private TextMeshProUGUI HighScore_Text;
+    
     //in Restart Canvas
+    [Tooltip("The UI elements that will be displayed on the Game over Canvas.")]
     [SerializeReference] private TextMeshProUGUI CurrentScore_Text;
+    
     
     [SerializeReference]private Canvas GameOver_Canvas;
     [SerializeReference]private Canvas Overlay_Canvas;
     [SerializeReference]private Canvas StartGame_Canvas;
-
-    [Header("UI Elements")] [Space(10f)] 
     
+    [Space(10f)] 
     [SerializeReference] private GameObject BonusParticle_Go;
 
     private int _highScore;
@@ -34,10 +43,13 @@ public class GameManager : MonoBehaviour
         Overlay_Canvas.enabled = false;
         StartGame_Canvas.enabled = true;
         
+        //To make the ball drop faster
         Physics.gravity *= 2;
+        
         PlayerController.OnPlayerJump += ScoreUpdate;
         PlayerController.OnGameOver += ResetGame;
 
+        //Load previous session high score
         _highScore = PlayerPrefs.GetInt("HighScore", 0);
     }
 
@@ -47,12 +59,12 @@ public class GameManager : MonoBehaviour
         PlayerController.OnGameOver -= ResetGame;
     }
 
+    //Updates score live on the screen
     private void ScoreUpdate(bool isBonus)
     {
         if (isBonus)
         {
             _currentScore+=5;
-            // BonusParticle_Go.SetActive(true);
         }
         else
         {
@@ -60,16 +72,20 @@ public class GameManager : MonoBehaviour
         }
         Score_Text.text = _currentScore.ToString();
     }
+    
+    //Game over method
 
     private void ResetGame()
     {
         BonusParticle_Go.SetActive(true);
+        
         //reset score
         if (_currentScore > _highScore)
         {
             _highScore = _currentScore;
         }
 
+        //Text element update
         CurrentScore_Text.text = $"Current: {_currentScore}";
         PlayerPrefs.SetInt("HighScore", _highScore);
         HighScore_Text.text = $"Best: {_highScore}";
@@ -80,6 +96,7 @@ public class GameManager : MonoBehaviour
         Overlay_Canvas.enabled = false;
     }
 
+    //Retry Button link
     public void ReloadGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

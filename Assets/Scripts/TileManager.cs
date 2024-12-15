@@ -36,10 +36,15 @@ public class TileManager : MonoBehaviour
         InvokeRepeating(nameof(SpawnTiles), 0, 1);
     }
     
+    /// <summary>
+    /// being called every one second
+    /// </summary>
     public void SpawnTiles()
     {
         int posX = Random.Range(0, 3);
         int tileIndex = -1;
+        
+        //checks for available tile from the poool
         for (int index = 0; index < Tiles.Length; index++)
         {
             if (Tiles[index].IsAvailable)
@@ -49,16 +54,21 @@ public class TileManager : MonoBehaviour
             }
         }
 
+        //Mark is out of pool
         Tiles[tileIndex].Activate();
         
-        //20% chance for bonus
-        Tiles[tileIndex].Bonus_Go.SetActive(Random.Range(0, 100) < 20);
-        
+        //put it at start of animation position
         Tiles[tileIndex].transform.position = StartPoint.position;
+        
+        //move it to the actual start position
         Tiles[tileIndex].transform.DOMove(StartPoints[posX].position, 0.5f).OnComplete(() =>
         {
+            //after animation complete snap it to the position
             Tiles[tileIndex].transform.position = StartPoints[posX].position;
-            Tiles[tileIndex].Rb.linearVelocity = Vector3.back * TileMoveSpeed;
+            
+            //give it velocity
+            Tiles[tileIndex].MoveTile(Vector3.back * TileMoveSpeed);
+            
         });
     }
 }
